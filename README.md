@@ -14,7 +14,7 @@
 10. [التشكيل](#التشكيل)
 11. [الملاحظات](#الملاحظات)
 12. [ترجمة](#ترجمة)
-
+  
 ## مقدمة
 
 ![Humorous image of software quality estimation as a count of how many expletives
