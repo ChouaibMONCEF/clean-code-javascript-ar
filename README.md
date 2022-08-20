@@ -61,3 +61,234 @@ const currentDate = moment().format("YYYY/MM/DD");
 ```
 
 **[⬆ العودة للاعلى](#المحتوى)**
+
+## **Classes**
+
+### تفضيل ( Classes ( ES2015 / ES6 على ( Functions ( ES5 العادية
+
+من الصعب جدا الحصول على وراثة classes قابلة للقراءة ,للبناء والتعريفات الكلاسيكية لوراثة ES5 classes . إذا كنت بحاجة إلى الوراثة (وكن على دراية بأنك قد لا تحتاج إليه) ، فستفضل ES2015/ES6 classes. ومع ذلك ، حاول ان تفظل Functions الصغيرة على Classes, حتى تجد نفسك بحاجة إلى objects أكبر وأكثر تعقيدا .
+
+**سيئ:**
+
+```javascript
+const Animal = function (age) {
+  if (!(this instanceof Animal)) {
+    throw new Error("Instantiate Animal with `new`");
+  }
+
+  this.age = age;
+};
+
+Animal.prototype.move = function move() {};
+
+const Mammal = function (age, furColor) {
+  if (!(this instanceof Mammal)) {
+    throw new Error("Instantiate Mammal with `new`");
+  }
+
+  Animal.call(this, age);
+  this.furColor = furColor;
+};
+
+Mammal.prototype = Object.create(Animal.prototype);
+Mammal.prototype.constructor = Mammal;
+Mammal.prototype.liveBirth = function liveBirth() {};
+
+const Human = function (age, furColor, languageSpoken) {
+  if (!(this instanceof Human)) {
+    throw new Error("Instantiate Human with `new`");
+  }
+
+  Mammal.call(this, age, furColor);
+  this.languageSpoken = languageSpoken;
+};
+
+Human.prototype = Object.create(Mammal.prototype);
+Human.prototype.constructor = Human;
+Human.prototype.speak = function speak() {};
+```
+
+**جيد:**
+
+```javascript
+class Animal {
+  constructor(age) {
+    this.age = age;
+  }
+
+  move() {
+    /* ... */
+  }
+}
+
+class Mammal extends Animal {
+  constructor(age, furColor) {
+    super(age);
+    this.furColor = furColor;
+  }
+
+  liveBirth() {
+    /* ... */
+  }
+}
+
+class Human extends Mammal {
+  constructor(age, furColor, languageSpoken) {
+    super(age, furColor);
+    this.languageSpoken = languageSpoken;
+  }
+
+  speak() {
+    /* ... */
+  }
+}
+```
+
+**[⬆ العودة للاعلى](#المحتوى)**
+
+### استخدام طريقة التسلسل (Use method chaining)
+
+هذا النمط مفيد جدا في جافا سكريبت وتراه في العديد من المكتبات مثل jQuery و Lodash. يسمح للكود الخاص بك أن يكون معبرا ، وأقل ثرثرة. لهذا السبب ، أقترح ، استخدام طريقة التسلسل
+وألق نظرة على مدى نظافة الكود الخاصة بك. في class functions الخاص بك ، ما عليك سوى إرجاع هذا في نهاية كل function، ويمكنك ربط class methods الإضافية بها.
+
+**سيئ:**
+
+```javascript
+class Car {
+  constructor(make, model, color) {
+    this.make = make;
+    this.model = model;
+    this.color = color;
+  }
+
+  setMake(make) {
+    this.make = make;
+  }
+
+  setModel(model) {
+    this.model = model;
+  }
+
+  setColor(color) {
+    this.color = color;
+  }
+
+  save() {
+    console.log(this.make, this.model, this.color);
+  }
+}
+
+const car = new Car("Ford", "F-150", "red");
+car.setColor("pink");
+car.save();
+```
+
+**جيد:**
+
+```javascript
+class Car {
+  constructor(make, model, color) {
+    this.make = make;
+    this.model = model;
+    this.color = color;
+  }
+
+  setMake(make) {
+    this.make = make;
+    // NOTE: Returning this for chaining
+    return this;
+  }
+
+  setModel(model) {
+    this.model = model;
+    // NOTE: Returning this for chaining
+    return this;
+  }
+
+  setColor(color) {
+    this.color = color;
+    // NOTE: Returning this for chaining
+    return this;
+  }
+
+  save() {
+    console.log(this.make, this.model, this.color);
+    // NOTE: Returning this for chaining
+    return this;
+  }
+}
+
+const car = new Car("Ford", "F-150", "red").setColor("pink").save();
+```
+
+**[⬆ العودة للاعلى](#المحتوى)**
+
+### تفضيل composition على inheritance
+
+وكما جاء في [_Design Patterns_] (https://en.wikipedia.org/wiki/Design_Patterns) من قبل Gang of Four،
+يجب أن تفضل composition على inheritance حينما يمكنك ذلك. هناك الكثير من
+أسباب الوجيهية لإستخدام inheritance والكثير من الأسباب الوجيهة لإستخدام composition.
+النقطة الرئيسية لهذا المبدأ هي أنه إذا كان عقلك يذهب غريزيا للinheritance ، حاول التفكير فيما إذا كان composition يمكن أن يحل مشكلتك بشكل أفضل. في بعض
+الحالات التي يمكنها.
+
+قد تتساءل بعد هذا، "متى يجب أن أستخدم inheritance؟" هذا
+يعتمد على مشكلتك التي تريد حلها ، ولكن هذه قائمة لائقة عندما يكون inheritance
+أكثر منطقية من composition:
+
+1. يمثل ميراثك علاقة "هو" وليس "لديه"
+   العلاقة (الإنسان->الحيوان مقابل المستخدم->تفاصيل المستخدم).
+2. يمكنك إعادة استخدام االكود من classes الأساسية (يمكن للبشر التحرك مثل جميع الحيوانات).
+
+3. تريد إجراء تغييرات عامة على derived classes عن طريق تغيير class الأساسية.
+   (تغيير حرق السعرات الحرارية لجميع الحيوانات عندما تتحرك).
+
+**سيئ:**
+
+```javascript
+class Employee {
+  constructor(name, email) {
+    this.name = name;
+    this.email = email;
+  }
+
+  // ...
+}
+
+// Bad because Employees "have" tax data. EmployeeTaxData is not a type of Employee
+class EmployeeTaxData extends Employee {
+  constructor(ssn, salary) {
+    super();
+    this.ssn = ssn;
+    this.salary = salary;
+  }
+
+  // ...
+}
+```
+
+**جيد:**
+
+```javascript
+class EmployeeTaxData {
+  constructor(ssn, salary) {
+    this.ssn = ssn;
+    this.salary = salary;
+  }
+
+  // ...
+}
+
+class Employee {
+  constructor(name, email) {
+    this.name = name;
+    this.email = email;
+  }
+
+  setTaxData(ssn, salary) {
+    this.taxData = new EmployeeTaxData(ssn, salary);
+  }
+  // ...
+}
+```
+
+**[⬆ العودة للاعلى](#المحتوى)**
