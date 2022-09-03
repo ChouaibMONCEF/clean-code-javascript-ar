@@ -14,7 +14,7 @@
 10. [التشكيل](#التشكيل)
 11. [الملاحظات](#الملاحظات)
 12. [ترجمة](#ترجمة)
-  
+
 ## مقدمة
 
 ![Humorous image of software quality estimation as a count of how many expletives
@@ -51,13 +51,175 @@ _ clean code _.
 **سيئ:**
 
 ```javascript
-const yyyymmdstr = moment().format("YYYY/MM/DD");
+const yyyymmdstr = moment().format("YYYY/MM/DD")
 ```
 
 **جيد:**
 
 ```javascript
-const currentDate = moment().format("YYYY/MM/DD");
+const currentDate = moment().format("YYYY/MM/DD")
+```
+
+**[⬆ العودة للاعلى](#المحتوى)**
+
+### استعمل نفس المفردات لنفس نوع المتغيرات
+
+**سيئ:**
+
+```javascript
+getUserInfo()
+getClientData()
+getCustomerRecord()
+```
+
+**جيد:**
+
+```javascript
+getUser()
+```
+
+**[⬆ العودة للاعلى](#المحتوى)**
+
+### استعمل اسماء سهلة الفهم و يمكن البحث عليها
+
+سنقرأ كود أكثر مما سنكتبه. من المهم أن الكود الذي نكتبه قابل للقراءة والبحث. عدم تسمية المتغيرات التي ينتهي بها الأمر إلى أن تكون ذات مغزى لفهم برنامجنا ، يجعل الامر صعبا على القراء. اجعل أسماءك قابلة للبحث. يمكن أن تساعد أدوات مثل
+[buddy.js](https://github.com/danielstjules/buddy.js) و
+[ESLint](https://github.com/eslint/eslint/blob/660e0918933e6e7fede26bc675a0763a6b357c94/docs/rules/no-magic-numbers.md)
+في تحديد الثوابت غير المسماة.
+
+**سيئ:**
+
+```javascript
+// What the heck is 86400000 for?
+setTimeout(blastOff, 86400000)
+```
+
+**جيد:**
+
+```javascript
+// Declare them as capitalized named constants.
+const MILLISECONDS_PER_DAY = 60 * 60 * 24 * 1000 //86400000;
+
+setTimeout(blastOff, MILLISECONDS_PER_DAY)
+```
+
+**[⬆ العودة للاعلى](#المحتوى)**
+
+### Use explanatory variables
+
+**سيئ:**
+
+```javascript
+const address = "One Infinite Loop, Cupertino 95014"
+const cityZipCodeRegex = /^[^,\\]+[,\\\s]+(.+?)\s*(\d{5})?$/
+saveCityZipCode(
+  address.match(cityZipCodeRegex)[1],
+  address.match(cityZipCodeRegex)[2]
+)
+```
+
+**جيد:**
+
+```javascript
+const address = "One Infinite Loop, Cupertino 95014"
+const cityZipCodeRegex = /^[^,\\]+[,\\\s]+(.+?)\s*(\d{5})?$/
+const [_, city, zipCode] = address.match(cityZipCodeRegex) || []
+saveCityZipCode(city, zipCode)
+```
+
+**[⬆ العودة للاعلى](#المحتوى)**
+
+### تجنب التخطيط الذهني
+
+الواضح دائمًا أفضل من الضمني.
+
+**سيئ:**
+
+```javascript
+const locations = ["Austin", "New York", "San Francisco"]
+locations.forEach((l) => {
+  doStuff()
+  doSomeOtherStuff()
+  // ...
+  // ...
+  // ...
+  // Wait, what is `l` for again?
+  dispatch(l)
+})
+```
+
+**جيد:**
+
+```javascript
+const locations = ["Austin", "New York", "San Francisco"]
+locations.forEach((location) => {
+  doStuff()
+  doSomeOtherStuff()
+  // ...
+  // ...
+  // ...
+  dispatch(location)
+})
+```
+
+**[⬆ العودة للاعلى](#المحتوى)**
+
+### لا تقم بإضافة سياق غير ضروري
+
+إذا أخبرك اسم class/object بشيء ما ، فلا تكرر ذلك في اسم المتغير الخاص بك.
+
+**سيئ:**
+
+```javascript
+const Car = {
+  carMake: "Honda",
+  carModel: "Accord",
+  carColor: "Blue",
+}
+
+function paintCar(car, color) {
+  car.carColor = color
+}
+```
+
+**جيد:**
+
+```javascript
+const Car = {
+  make: "Honda",
+  model: "Accord",
+  color: "Blue",
+}
+
+function paintCar(car, color) {
+  car.color = color
+}
+```
+
+**[⬆ العودة للاعلى](#المحتوى)**
+
+### Use default arguments instead of short circuiting or conditionals
+
+Default arguments are often cleaner than short circuiting. Be aware that if you
+use them, your function will only provide default values for `undefined`
+arguments. Other "falsy" values such as `''`, `""`, `false`, `null`, `0`, and
+`NaN`, will not be replaced by a default value.
+
+**سيئ:**
+
+```javascript
+function createMicrobrewery(name) {
+  const breweryName = name || "Hipster Brew Co."
+  // ...
+}
+```
+
+**جيد:**
+
+```javascript
+function createMicrobrewery(name = "Hipster Brew Co.") {
+  // ...
+}
 ```
 
 **[⬆ العودة للاعلى](#المحتوى)**
@@ -73,39 +235,39 @@ const currentDate = moment().format("YYYY/MM/DD");
 ```javascript
 const Animal = function (age) {
   if (!(this instanceof Animal)) {
-    throw new Error("Instantiate Animal with `new`");
+    throw new Error("Instantiate Animal with `new`")
   }
 
-  this.age = age;
-};
+  this.age = age
+}
 
-Animal.prototype.move = function move() {};
+Animal.prototype.move = function move() {}
 
 const Mammal = function (age, furColor) {
   if (!(this instanceof Mammal)) {
-    throw new Error("Instantiate Mammal with `new`");
+    throw new Error("Instantiate Mammal with `new`")
   }
 
-  Animal.call(this, age);
-  this.furColor = furColor;
-};
+  Animal.call(this, age)
+  this.furColor = furColor
+}
 
-Mammal.prototype = Object.create(Animal.prototype);
-Mammal.prototype.constructor = Mammal;
-Mammal.prototype.liveBirth = function liveBirth() {};
+Mammal.prototype = Object.create(Animal.prototype)
+Mammal.prototype.constructor = Mammal
+Mammal.prototype.liveBirth = function liveBirth() {}
 
 const Human = function (age, furColor, languageSpoken) {
   if (!(this instanceof Human)) {
-    throw new Error("Instantiate Human with `new`");
+    throw new Error("Instantiate Human with `new`")
   }
 
-  Mammal.call(this, age, furColor);
-  this.languageSpoken = languageSpoken;
-};
+  Mammal.call(this, age, furColor)
+  this.languageSpoken = languageSpoken
+}
 
-Human.prototype = Object.create(Mammal.prototype);
-Human.prototype.constructor = Human;
-Human.prototype.speak = function speak() {};
+Human.prototype = Object.create(Mammal.prototype)
+Human.prototype.constructor = Human
+Human.prototype.speak = function speak() {}
 ```
 
 **جيد:**
@@ -113,7 +275,7 @@ Human.prototype.speak = function speak() {};
 ```javascript
 class Animal {
   constructor(age) {
-    this.age = age;
+    this.age = age
   }
 
   move() {
@@ -123,8 +285,8 @@ class Animal {
 
 class Mammal extends Animal {
   constructor(age, furColor) {
-    super(age);
-    this.furColor = furColor;
+    super(age)
+    this.furColor = furColor
   }
 
   liveBirth() {
@@ -134,8 +296,8 @@ class Mammal extends Animal {
 
 class Human extends Mammal {
   constructor(age, furColor, languageSpoken) {
-    super(age, furColor);
-    this.languageSpoken = languageSpoken;
+    super(age, furColor)
+    this.languageSpoken = languageSpoken
   }
 
   speak() {
@@ -156,31 +318,31 @@ class Human extends Mammal {
 ```javascript
 class Car {
   constructor(make, model, color) {
-    this.make = make;
-    this.model = model;
-    this.color = color;
+    this.make = make
+    this.model = model
+    this.color = color
   }
 
   setMake(make) {
-    this.make = make;
+    this.make = make
   }
 
   setModel(model) {
-    this.model = model;
+    this.model = model
   }
 
   setColor(color) {
-    this.color = color;
+    this.color = color
   }
 
   save() {
-    console.log(this.make, this.model, this.color);
+    console.log(this.make, this.model, this.color)
   }
 }
 
-const car = new Car("Ford", "F-150", "red");
-car.setColor("pink");
-car.save();
+const car = new Car("Ford", "F-150", "red")
+car.setColor("pink")
+car.save()
 ```
 
 **جيد:**
@@ -188,37 +350,37 @@ car.save();
 ```javascript
 class Car {
   constructor(make, model, color) {
-    this.make = make;
-    this.model = model;
-    this.color = color;
+    this.make = make
+    this.model = model
+    this.color = color
   }
 
   setMake(make) {
-    this.make = make;
+    this.make = make
     // NOTE: Returning this for chaining
-    return this;
+    return this
   }
 
   setModel(model) {
-    this.model = model;
+    this.model = model
     // NOTE: Returning this for chaining
-    return this;
+    return this
   }
 
   setColor(color) {
-    this.color = color;
+    this.color = color
     // NOTE: Returning this for chaining
-    return this;
+    return this
   }
 
   save() {
-    console.log(this.make, this.model, this.color);
+    console.log(this.make, this.model, this.color)
     // NOTE: Returning this for chaining
-    return this;
+    return this
   }
 }
 
-const car = new Car("Ford", "F-150", "red").setColor("pink").save();
+const car = new Car("Ford", "F-150", "red").setColor("pink").save()
 ```
 
 **[⬆ العودة للاعلى](#المحتوى)**
@@ -247,8 +409,8 @@ const car = new Car("Ford", "F-150", "red").setColor("pink").save();
 ```javascript
 class Employee {
   constructor(name, email) {
-    this.name = name;
-    this.email = email;
+    this.name = name
+    this.email = email
   }
 
   // ...
@@ -257,9 +419,9 @@ class Employee {
 // Bad because Employees "have" tax data. EmployeeTaxData is not a type of Employee
 class EmployeeTaxData extends Employee {
   constructor(ssn, salary) {
-    super();
-    this.ssn = ssn;
-    this.salary = salary;
+    super()
+    this.ssn = ssn
+    this.salary = salary
   }
 
   // ...
@@ -271,8 +433,8 @@ class EmployeeTaxData extends Employee {
 ```javascript
 class EmployeeTaxData {
   constructor(ssn, salary) {
-    this.ssn = ssn;
-    this.salary = salary;
+    this.ssn = ssn
+    this.salary = salary
   }
 
   // ...
@@ -280,12 +442,12 @@ class EmployeeTaxData {
 
 class Employee {
   constructor(name, email) {
-    this.name = name;
-    this.email = email;
+    this.name = name
+    this.email = email
   }
 
   setTaxData(ssn, salary) {
-    this.taxData = new EmployeeTaxData(ssn, salary);
+    this.taxData = new EmployeeTaxData(ssn, salary)
   }
   // ...
 }
